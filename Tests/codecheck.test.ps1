@@ -1,10 +1,10 @@
-[cmdletbinding()]
+[CmdletBinding()]
 param (
     [System.IO.FileInfo]$filePath
 )
 $excludeRule = @(
-    "PSAvoidUsingWriteHost",
-    "PSAvoidUsingConvertToSecureStringWithPlainText"
+    'PSAvoidUsingWriteHost',
+    'PSAvoidUsingConvertToSecureStringWithPlainText'
 )
 $fp = Split-Path $PSScriptRoot -Parent
 if (Test-Path $fp\localenv.ps1 -ErrorAction SilentlyContinue) {
@@ -12,13 +12,12 @@ if (Test-Path $fp\localenv.ps1 -ErrorAction SilentlyContinue) {
 }
 $fp = "$fp\bin\release\$env:BUILD_BUILDID"
 $fp
-Describe "Checking content exists" {
+Describe 'Checking content exists' {
     if ($filePath) {
         $scripts = Get-ChildItem $filePath
-    }
-    else {
+    } else {
         $scripts = Get-ChildItem -Path "$fp\$env:MODULENAME" -Recurse -Include *.ps1
-        $scope = @("Private", "Public")
+        $scope = @('Private', 'Public')
         foreach ($s in $scope) {
             Context "Checking for files in $s.." {
                 It "$s scripts folder not empty" { ($scripts | Where-Object { $_.Directory.Name -eq $s }).count | Should -BeGreaterOrEqual 1 }
@@ -26,18 +25,18 @@ Describe "Checking content exists" {
         }
     }
 }
-if (!($filePath)) {
-    Describe "Manifest" {
-        Context "Checking module manifest" {
+if (-not($filePath)) {
+    Describe 'Manifest' {
+        Context 'Checking module manifest' {
             $manifest = Test-ModuleManifest -Path "$fp\$env:MODULENAME\$env:MODULENAME`.psd1"
-            It "Has a valid module manifest" { $manifest | Should -Not -BeNullOrEmpty }
+            It 'Has a valid module manifest' { $manifest | Should -Not -BeNullOrEmpty }
         }
     }
 }
-Describe "Checking Code Quality" {
+Describe 'Checking Code Quality' {
     $scripts = Get-ChildItem -Path "$fp\$env:MODULENAME" -Recurse -Include *.ps1
     $scripts.ForEach{
-        Context "PSSA Quality Check: $($_.name)" {
+        Context "PSScriptAnalyzer Quality Check: $($_.name)" {
             $pssaIssues = Invoke-ScriptAnalyzer -Path "$_" -ExcludeRule $excludeRule
             $pssaRuleNames = Get-ScriptAnalyzerRule | Select-Object -ExpandProperty RuleName
             foreach ($rule in $pssaRuleNames) {

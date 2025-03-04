@@ -1,18 +1,21 @@
 # Intune.HV.Tools
+
 [![Build Status](https://dev.azure.com/powers-hell/Intune.USB.Creator/_apis/build/status/tabs-not-spaces.Intune.HV.Tools%20-%20Publish%20Prod?branchName=master)](https://dev.azure.com/powers-hell/Intune.USB.Creator/_build/latest?definitionId=37&branchName=master)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/v/Intune.HV.Tools.svg?style=flat&logo=powershell&label=PSGallery%20Version)
 ![PSGallery Downloads](https://img.shields.io/powershellgallery/dt/Intune.HV.Tools.svg?style=flat&logo=powershell&label=PSGallery%20Downloads)
+
 ## Summary
 
-A set of tools to assist with the creation of Intune managed virtual machines in Hyper-V.
+A set of tools to assist with the creation of Intune-managed virtual machines in Hyper-V.
 
 Created in collaboration with:
 
 - [AdamGrossTX](https://github.com/AdamGrossTX)
 - [brucesa85](https://github.com/brucesa85)
 - [OnPremCloudGuy](https://github.com/onpremcloudguy)
+- [Jonathan Pitre](https://github.com/JonathanPitre)
 
-## Pre-Reqs
+## Prerequisites
 
 - [WindowsAutoPilotIntune](https://www.powershellgallery.com/packages/WindowsAutoPilotIntune)
 - [Microsoft.Graph.Intune](https://www.powershellgallery.com/packages/Microsoft.Graph.Intune/)
@@ -34,13 +37,13 @@ Install-Module -Name Intune.HV.Tools -Scope CurrentUser
 Initialize-HVTools -Path C:\Lab
 ```
 
-If the path provided doesn't exist it will be automatically created. Please note this tool creates very large reference images - if your system drive is small, dont initialize the tools on it.
+If the path provided doesn't exist it will be automatically created. Please note this tool creates very large reference images - if your system drive is small, don't initialize the tools on it.
 
 The environment is a simple folder structure containing the configuration file for the tool, reference images to be used for provisioning of VMs and tenant folders containing offline Autopilot configuration files and provisioned *.vhdx images.
 
 Folder structure example displayed below:
 
-```
+```text
 📦.hvtools
  ┣ 📂tenantVMs
  ┃ ┣ 📂MegaCorp
@@ -103,7 +106,7 @@ If you name your images based on editions you can have multiple images per insta
 Add-TenantToConfig -TenantName 'MegaCorp' -ImageName 2004 -AdminUpn 'intune-admin@megacorp.com'
 ```
 
-You can add as many tenants to the environment as you want. The <code>ImageName</code> parameter auto-completes to the available images from your environment.
+You can add as many tenants to the environment as you want. The `ImageName` parameter auto-completes to the available images from your environment.
 
 The ImageName provides the ability to set a default reference image per tenant, however this can be overwritten during creation.
 
@@ -113,7 +116,7 @@ The ImageName provides the ability to set a default reference image per tenant, 
 Add-NetworkToConfig -VSwitchName 'Default Switch'
 ```
 
-<code>VSwitchName</code> autocompletes to the available virtual switches already created in your Hyper-V environment. At the moment you can only have one network config in your environment.
+`VSwitchName` autocompletes to the available virtual switches already created in your Hyper-V environment. At the moment you can only have one network config in your environment.
 
 ### Get HV.Tools configuration
 
@@ -130,8 +133,8 @@ New-ClientVM -TenantName 'Powers-Hell' -OSBuild 2004 -NumberOfVMs 10 -CPUsPerVM 
 ```
 
 The example above will create 10 VMs using the reference image from the environment config named '2004' with 2 CPUs per VM and 8gb of ram.
-<code>TenantName</code> autocompletes from the list of tenants in your environment.
-<code>OSBuild</code> autocompletes from the list of images in your environment.
+`TenantName` autocompletes from the list of tenants in your environment.
+`OSBuild` autocompletes from the list of images in your environment.
 
 Reference images are now created in the "Add-ImageToConfig" stage, but if you've deleted the reference image or if the image can't be found, it will be created at this point. You will be asked which edition you want to use for the reference image.
 
@@ -145,7 +148,7 @@ Once this Autopilot configuration is captured locally, you will not be required 
 New-ClientVM -TenantName 'Powers-Hell' -OSBuild 2004 -NumberOfVMs 10 -CPUsPerVM 2 -VMMemory 8gb -SkipAutopilot
 ```
 
-Exactly the same as the previous step. Using the parameter <code>SkipAutopilot</code> allows you to build VMs without injecting the Autopilot configuration file into the *.VHDX.
+Exactly the same as the previous step. Using the parameter `SkipAutopilot` allows you to build VMs without injecting the Autopilot configuration file into the *.VHDX.
 
 ## Caveat Emptor
 
@@ -155,49 +158,69 @@ If you find a problem and want to contribute - please do! I love community invol
 
 ## Release Notes
 
+## 1.0.0.320
+
+- Fixed VMIntegrationService error on non-English systems [#24](https://github.com/tabs-not-spaces/Intune.HV.Tools/pull/24)
+- Fixed authentication error to use MgGraph [#29](https://github.com/tabs-not-spaces/Intune.HV.Tools/issues/29)
+- Added error checking when AutopilotConfigurationFile.json is missing
+- Added fix when multiple Autopilot profile exists
+- Improved code formatting
+- Improved comments
+- Fixed errors when using custom Virtual Machines Disks and Configs path
+- Added dynamic memory support for VM creation
+- Improved path handling for ISO and VM locations
+- Added support for internal virtual switch configuration
+- Improved error handling for ISO path validation
+
+### 1.0.0.312
+
+- Added ISOPath and RefVHDX as required parameters
+- Fixed documentation typo on line 37
+- Added support for custom VHDX files
+
 ### 1.0.0.289
 
-- Feature: Build ref images from Add-ImageToConfig
-- New Build fixes ServerOS issues
-- Adds Index from wim
-- General code cleanup
-- Improved VM naming code
-- Updated required module versions
-- Updated documentation
+- Added ability to build reference images from Add-ImageToConfig
+- Fixed compatibility issues with Server OS
+- Added Windows image index selection
+- Improved code organization and readability
+- Enhanced VM naming consistency
+- Updated minimum required module versions
+- Improved documentation clarity
 
 ### 1.0.0.281
 
-- Adding check to create HGS Guardian if not present
-- Create folder if needed and dismount VHDX (@hkystar35)
-- Added erroraction (@hkystar35)
-- updated build script to grab release notes from git
-- formatting release notes
-- updated release notes (@hkystar35)
-- squashing an encoding bug
+- Added missing HGS Guardian creation check
+- Added automatic folder creation and VHDX dismount (thanks [hkystar35](https://github.com/hkystar35))
+- Added error handling improvements (thanks [hkystar35](https://github.com/hkystar35))
+- Added git release notes to build script
+- Improved release notes formatting
+- Enhanced release notes clarity (thanks [hkystar35](https://github.com/hkystar35))
+- Fixed file encoding issue
 
 ### 1.0.0.205
 
-- Small bug fixes (@hkystar35)
-- fixing old variable reference
-- Improving cmdlet autocomplete
-- updating parameter values to be standardized
-- Updating cmdlet names for better use
-- updating cmdlet name for easier use..
-- Fixing module dependency for pwsh7 support
-- Initialize-HVTools parameter Path now required.
-- updating description and release notes
-- Ready for prime time.. (#3)
-- added serial number to notes (@brucesa85)
-- preparing for first ship
-- updated required modules
-- fixed multiple vm naming finally...
-- added support for pwsh 5 and 7
-- added ability to reset the config file
-- new config function added
-- removing expansion
-- added support for powershell 5 and 7
-- added additional argumentcompleter
+- Fixed various minor issues (@hkystar35)
+- Fixed legacy variable reference
+- Added cmdlet autocomplete functionality
+- Standardized parameter values
+- Improved cmdlet naming consistency
+- Enhanced cmdlet usability
+- Fixed PowerShell 7 module dependencies
+- Added required Path parameter to Initialize-HVTools
+- Updated module description and notes
+- Released initial stable version (#3)
+- Added VM serial number to notes (@brucesa85)
+- Prepared for initial release
+- Updated module dependencies
+- Fixed multiple VM naming issues
+- Added PowerShell 5 and 7 compatibility
+- Added config reset capability
+- Added configuration management function
+- Removed unnecessary expansion
+- Added PowerShell version compatibility
+- Added parameter auto-completion
 
 ### 1.0.0.203
 
-- Initial commit
+- Initial release

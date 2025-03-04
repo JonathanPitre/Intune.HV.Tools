@@ -10,12 +10,12 @@ function Write-LogEntry {
     switch ($Type) {
         'Error' {
             $severity = 3
-            $fgColour = "Red"
+            $fgColor = "Red"
             break;
         }
         'Information' {
             $severity = 6
-            $fgColour = "Yellow"
+            $fgColor = "Yellow"
             break;
         }
     }
@@ -35,5 +35,5 @@ function Write-LogEntry {
         "file=`"$($scriptName.ScriptName)`">";
 
     $logLine | Out-File -Append -Encoding utf8 -FilePath $logFile -Force
-    Write-Host $Message -ForegroundColor $fgColour
+    Write-Host $Message -ForegroundColor $fgColor
 }

@@ -5,10 +5,9 @@ $cfg = Get-Content "$env:USERPROFILE\.hvtoolscfgpath" -ErrorAction SilentlyConti
 $script:tick = [char]0x221a
 
 if ($cfg) {
-    $script:hvConfig = if (Get-Content -Path $cfg -raw -ErrorAction SilentlyContinue) {
-        Get-Content -Path $cfg -raw -ErrorAction SilentlyContinue | ConvertFrom-Json
-    }
-    else {
+    $script:hvConfig = if (Get-Content -Path $cfg -Raw -ErrorAction SilentlyContinue) {
+        Get-Content -Path $cfg -Raw -ErrorAction SilentlyContinue | ConvertFrom-Json
+    } else {
         $script:hvConfig = $null
     }
 }
@@ -17,8 +16,7 @@ if ($cfg) {
 foreach ($import in @($Public + $Private)) {
     try {
         . $import.FullName
-    }
-    catch {
+    } catch {
         Write-Error -Message "Failed to import function $($import.FullName): $_"
     }
 }
@@ -64,7 +62,7 @@ $vLan = {
 }
 Register-ArgumentCompleter -CommandName Add-NetworkToConfig -ParameterName VSwitchName -ScriptBlock $vLan
 
-$win10Builds = {
+$winBuilds = {
     param (
         $commandName,
         $parameterName,
@@ -82,6 +80,6 @@ $win10Builds = {
         )
     }
 }
-Register-ArgumentCompleter -CommandName Add-TenantToConfig -ParameterName ImageName -ScriptBlock $win10Builds
-Register-ArgumentCompleter -CommandName New-ClientVM -ParameterName OSBuild -ScriptBlock $win10Builds
+Register-ArgumentCompleter -CommandName Add-TenantToConfig -ParameterName ImageName -ScriptBlock $winBuilds
+Register-ArgumentCompleter -CommandName New-ClientVM -ParameterName OSBuild -ScriptBlock $winBuilds
 #endregion

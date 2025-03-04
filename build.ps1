@@ -1,6 +1,6 @@
-[cmdletbinding()]
+[CmdletBinding()]
 param (
-    [parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $true)]
     [System.IO.FileInfo]$modulePath,
 
     [parameter(Mandatory = $false)]
@@ -20,7 +20,7 @@ if ($buildLocal) {
 
 }
 try {
-    if (!($moduleName)) {
+    if (-not($moduleName)) {
         $moduleName = Split-Path $modulePath -Leaf
     }
     #region Generate a new version number
@@ -32,22 +32,22 @@ try {
     "Module Path is $modulePath"
     "Module Name is $moduleName"
     "Release Path is $relPath"
-    if (!(Test-Path $relPath)) {
+    if (-not (Test-Path $relPath)) {
         New-Item -Path $relPath -ItemType Directory -Force | Out-Null
     }
-    Copy-Item "$modulePath\*" -Destination "$relPath" -Recurse -Exclude ".gitKeep"
+    Copy-Item "$modulePath\*" -Destination "$relPath" -Recurse -Exclude '.gitKeep'
     #endregion
     #region Generate a list of public functions and update the module manifest
     $functions = @(Get-ChildItem -Path $relPath\Public\*.ps1 -ErrorAction SilentlyContinue).basename
     $params = @{
-        Path              = "$relPath\$ModuleName.psd1"
-        ModuleVersion     = $newVersion
-        Description       = (Get-Content $relPath\description.txt -raw).ToString()
+        Path = "$relPath\$ModuleName.psd1"
+        ModuleVersion = $newVersion
+        Description = (Get-Content $relPath\description.txt -Raw).ToString()
         FunctionsToExport = $functions
-        ReleaseNotes      = @((git log --oneline --decorate -- './Intune.HV.Tools/*.*') -join "`n")
+        ReleaseNotes = @((git log --oneline --decorate -- './Intune.HV.Tools/*.*') -join "`n")
     }
     Update-ModuleManifest @params
-    $moduleManifest = Get-Content $relPath\$ModuleName.psd1 -raw | Invoke-Expression
+    $moduleManifest = Get-Content $relPath\$ModuleName.psd1 -Raw | Invoke-Expression
     #endregion
     #region Generate the nuspec manifest
     $t = [xml](Get-Content $PSScriptRoot\module.nuspec -Raw)
@@ -55,8 +55,8 @@ try {
     $t.package.metadata.version = $newVersion.ToString()
     $t.package.metadata.authors = $moduleManifest.author.ToString()
     $t.package.metadata.owners = $moduleManifest.author.ToString()
-    $t.package.metadata.requireLicenseAcceptance = "false"
-    $t.package.metadata.description = (Get-Content $relPath\description.txt -raw).ToString()
+    $t.package.metadata.requireLicenseAcceptance = 'false'
+    $t.package.metadata.description = (Get-Content $relPath\description.txt -Raw).ToString()
     $t.package.metadata.description
     $t.package.metadata.releaseNotes = @((git log --oneline --decorate -- './Intune.HV.Tools/*.*') -join "`n")
     $t.package.metadata.releaseNotes
@@ -64,7 +64,6 @@ try {
     $t.package.metadata.tags = ($moduleManifest.PrivateData.PSData.Tags -join ',').ToString()
     $t.Save("$PSScriptRoot\$moduleName`.nuspec")
     #endregion
-}
-catch {
+} catch {
     $_
 }

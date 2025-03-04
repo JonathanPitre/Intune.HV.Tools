@@ -1,4 +1,4 @@
-if (!(Test-Path $fp\.tests\)) {
+if (-not(Test-Path $fp\.tests\)) {
     new-item $fp\.tests -ItemType Directory -Force
 }
 Import-Module Pester -RequiredVersion 4.10.1 -Force

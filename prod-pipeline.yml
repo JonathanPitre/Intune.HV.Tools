@@ -9,7 +9,7 @@ trigger:
       - /.gitignore
       - /readme.md
       - /.tests
-      
+
 pr: none
 
 stages:
@@ -25,10 +25,10 @@ stages:
               targetType: 'inline'
               script: |
                 Install-Module -Name Pester -MaximumVersion 4.10.1 -Verbose -Scope CurrentUser -SkipPublisherCheck -Force
-                Install-Module WindowsAutoPilotIntune -Scope CurrentUser -Force
-                Install-Module Microsoft.Graph.Intune -Scope CurrentUser -Force
-                Install-Module Hyper-ConvertImage -Scope CurrentUser -Force
-                Install-Module PSScriptAnalyzer -Scope CurrentUser -SkipPublisherCheck -ErrorAction SilentlyContinue -Force
+                Install-Module -Name WindowsAutoPilotIntune -Scope CurrentUser -Force
+                Install-Module -Name Microsoft.Graph.Intune -Scope CurrentUser -Force
+                Install-Module -Name Hyper-ConvertImage -Scope CurrentUser -Force
+                Install-Module -Name PSScriptAnalyzer -Scope CurrentUser -SkipPublisherCheck -ErrorAction SilentlyContinue -Force
               pwsh: true
 
           - task: PowerShell@2
@@ -89,14 +89,14 @@ stages:
                           "Hyper-ConvertImage"
                         )
                         foreach ($m in $modules) {
-                          write-host "Installing module: $m.."
-                          Install-Module $m -Scope CurrentUser -Force
+                          Write-Host "Installing module: $m.."
+                          Install-Module -Name $m -Scope CurrentUser -Force
                         }
-                        write-host "Publishing module from: $env:Pipeline_Workspace\release\$env:MODULENAME"
+                        Write-Host "Publishing module from: $env:Pipeline_Workspace\release\$env:MODULENAME"
                         Publish-Module -Path "$env:Pipeline_Workspace\release\$env:MODULENAME" -NuGetApiKey $env:APIKEY
                       }
                       catch {
-                        write-warning $_
+                        Write-Warning $_
                       }
                     pwsh: true
                   env:
