@@ -21,7 +21,7 @@ Created in collaboration with:
 - [Microsoft.Graph.Intune](https://www.powershellgallery.com/packages/Microsoft.Graph.Intune/)
 - [Hyper-ConvertImage](https://www.powershellgallery.com/packages/Hyper-ConvertImage/)
 - [PowerShell 7](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows?view=powershell-7)
-- A copy of Windows 10 (Multi-format ISO recommended)
+- A copy of Windows ISO, you can use [Fido](https://github.com/pbatard/Fido) to grab them
 
 ## How to use
 
@@ -129,7 +129,7 @@ Allows you to access the environment configuration file.
 ### Create a virtual machine
 
 ``` PowerShell
-New-ClientVM -TenantName 'Powers-Hell' -OSBuild 2004 -NumberOfVMs 10 -CPUsPerVM 2 -VMMemory 8gb
+New-ClientVM -TenantName 'Powers-Hell' -OSBuild 2004 -NumberOfVMs 10 -CPUsPerVM 2 -VMMemory 8gb -DynamicMemory
 ```
 
 The example above will create 10 VMs using the reference image from the environment config named '2004' with 2 CPUs per VM and 8gb of ram.
@@ -145,7 +145,7 @@ Once this Autopilot configuration is captured locally, you will not be required 
 ### Create a virtual machine without Autopilot offline injection
 
 ``` PowerShell
-New-ClientVM -TenantName 'Powers-Hell' -OSBuild 2004 -NumberOfVMs 10 -CPUsPerVM 2 -VMMemory 8gb -SkipAutopilot
+New-ClientVM -TenantName 'Powers-Hell' -OSBuild 2004 -NumberOfVMs 10 -CPUsPerVM 2 -VMMemory 8gb -DynamicMemory -SkipAutopilot
 ```
 
 Exactly the same as the previous step. Using the parameter `SkipAutopilot` allows you to build VMs without injecting the Autopilot configuration file into the *.VHDX.
@@ -158,7 +158,7 @@ If you find a problem and want to contribute - please do! I love community invol
 
 ## Release Notes
 
-## 1.0.0.320
+### 1.0.0.320
 
 - Fixed VMIntegrationService error on non-English systems [#24](https://github.com/tabs-not-spaces/Intune.HV.Tools/pull/24)
 - Fixed authentication error to use MgGraph [#29](https://github.com/tabs-not-spaces/Intune.HV.Tools/issues/29)
